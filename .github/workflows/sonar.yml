@@ -13,21 +13,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Node
-        uses: actions/setup-node@v3
+      - name: Set up Java
+        uses: actions/setup-java@v3
         with:
-          node-version: "18"
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run SonarQube scan
+      - name: Run SonarQube Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          npm install -g sonarqube-scanner
-          sonarqube-scanner \
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-5.0.1.3006-linux.zip
+          unzip sonar-scanner-5.0.1.3006-linux.zip
+          ./sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner \
             -Dsonar.projectKey=Typescript-Undestanding \
             -Dsonar.sources=. \
-            -Dsonar.host.url=http://44.195.46.195:9000 \
+            -Dsonar.host.url=${SONAR_HOST_URL} \
             -Dsonar.login=${SONAR_TOKEN}
